@@ -17,9 +17,10 @@ event SessionUpdated:
 event RefundGasPetition:
     session_id: uint256
 
+
 @internal
 @pure
-def _generateSessionId(_client: address) -> uint256:
+def _generate_session_id(_client: address) -> uint256:
     return bitwise_xor(
                 convert(sha256(_client), uint256),
                 block.timestamp
@@ -38,27 +39,15 @@ def transfer_property(new_owner: address):
 
 
 @external
-def refundBalance():
+def refund_balance():
     assert self.owner == msg.sender, "invalid owner address."
     send(self.owner, self.balance)
 
 
 @external
 @payable
-def increaseGas(session_id: uint256):
-    assert self.sessionList[session_id].client == msg.sender, "invalid client."
-    self.sessionList[session_id].gas_amount += msg.value
-    
-    log SessionUpdated(
-            session_id,
-            self.sessionList[session_id].gas_amount
-        )
-
-
-@external
-@payable
-def initSession(client: address) -> uint256:
-    session_id: uint256 = self._generateSessionId(client)
+def init_session(client: address) -> uint256:
+    session_id: uint256 = self._generate_session_id(client)
     self.sessionList[session_id] = Session({
         client: client,
         gas_amount: msg.value
@@ -69,6 +58,26 @@ def initSession(client: address) -> uint256:
             self.sessionList[session_id].gas_amount
         )
     return session_id
+
+
+@external
+@payable
+def increase_gas(session_id: uint256):
+    assert self.sessionList[session_id].client == msg.sender, "invalid client."
+    self.sessionList[session_id].gas_amount += msg.value
+    
+    log SessionUpdated(
+            session_id,
+            self.sessionList[session_id].gas_amount
+        )
+
+
+@external
+def transfer_gas(from_session_id: uint256, to_session_id: uint256, gas_amount: uint256):
+    assert self.sessionList[from_session_id].client == msg.sender, "invalid client."
+    assert self.sessionList[from_session_id].gas_amount >= gas_amount, "insuficient gas on session."
+    self.sessionList[from_session_id].gas_amount -= gas_amount
+    self.sessionList[to_session_id].gas_amount += gas_amount
 
 
 # TODO, estos dos métodos se deben de estudiar mejor.
