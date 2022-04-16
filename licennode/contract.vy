@@ -14,6 +14,8 @@ event SessionUpdated:
     session_id: uint256
     gas_amount: uint256
 
+event RefundGasPetition:
+    session_id: uint256
 
 @internal
 @pure
@@ -31,13 +33,19 @@ def __init__():
 
 @external
 def transfer_property(new_owner: address):
-    assert self.owner == msg.sender
+    assert self.owner == msg.sender, "invalid owner address."
     self.owner = new_owner
 
 
 @external
+def refundBalance():
+    assert self.owner == msg.sender, "invalid owner address."
+    send(self.owner, self.balance)
+
+
+@external
 @payable
-def modifySession(session_id: uint256):
+def increaseGas(session_id: uint256):
     assert self.sessionList[session_id].client == msg.sender, "invalid client."
     self.sessionList[session_id].gas_amount += msg.value
     
@@ -63,7 +71,28 @@ def initSession(client: address) -> uint256:
     return session_id
 
 
+# TODO, estos dos métodos se deben de estudiar mejor.
 @external
-@view
-def getSessionGasAmount(session_id: uint256) -> uint256:
-    return self.sessionList[uint256].gas_amount
+def add_balance_refundable(session_id: uint256, balance_refundable: uint256):
+    assert self.owner == msg.sender, "invalid owner address."
+    self.sessionList[session_id].balance_refundable = balance_refundable
+
+
+# Requiere que el nodo le de el valor de gas que le quedó. 
+#  Por lo tanto, necesita ejecutarse en varios bloques.
+@external
+def refundGas(session_id: uint256):
+    assert self.sessionList[session_id].client == msg.sender, "invalid client."
+    log RefundGas(session_id)
+
+    assert self.sessionList[session_id].balance_refundable > 0, "can't refund the gas."
+    send(
+        self.sessionList[session_id].client, 
+        self.sessionList[session_id].balance_refundable
+    )
+    self.sessionList[session_id].gas_amount = 0
+    self.sessionList[session_id].balance_refundable = 0
+    log SessionUpdated(
+            session_id,
+            self.sessionList[session_id].gas_amount
+        )
