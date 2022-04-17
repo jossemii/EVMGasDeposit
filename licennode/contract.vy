@@ -119,7 +119,7 @@ def refund_gas(session_id: uint256):
 
 
 @external
-def down_contract():
+def shutdown_contract():
     assert self.owner == msg.sender, "invalid owner address."
     for i in range(0, 1): # self.session_list: TODO
         self._refund_gas(i)  # TODO tardará 2*numero_sesiones, ya que el método espera.
