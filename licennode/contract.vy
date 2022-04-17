@@ -51,10 +51,10 @@ def refund_balance():
 
 @external
 @payable
-def init_session(client: address) -> uint256:
-    session_id: uint256 = self._generate_session_id(client)
+def init_session() -> uint256:
+    session_id: uint256 = self._generate_session_id(msg.sender)
     self.session_list[session_id] = Session({
-        client: client,
+        client: msg.sender,
         gas_amount: msg.value,
          balance_refundable: 0
     })
