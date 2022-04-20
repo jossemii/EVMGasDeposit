@@ -7,6 +7,7 @@ from web3 import Web3, HTTPProvider
 class Node:
 
     def __init__(self, w3, contract_addr):
+        self.w3 = w3
         # set pre-funded account as sender
         w3.eth.default_account = w3.eth.accounts[0]
 
@@ -26,12 +27,37 @@ class Node:
             abi = abi, bytecode = bytecode, bytecode_runtime = bytecode_runtime
         )
 
+        self.sessions = {}
 
-    def _session_update(self):
-        pass
+    def _session_updated(self):
+        event = self.contract.events.RefundGasPetition()
+        self.sessions.update({
+            event.session_id: event.gas_amount
+        })
 
     def _refund_gas_petition(self):
-        pass
+        session_id = self.contract.events.RefundGasPetition().session_id
+        self.w3.eth.wait_for_transaction_receipt(
+            self.contract.functions.set_balance_refundable(
+                session_id = self.contract.events.RefundGasPetition().session_id,
+                balance_refundable = self.sessions[session_id] - gas_amount_consumed(session_id)
+            ).transact()
+        )
+
+
+    def transfer_property(self, new_owner):
+        self.w3.eth.wait_for_transaction_receipt(
+            self.contract.functions.transfer_property(
+                new_owner = new_owner
+            ).transact()
+        )
+
+    def shutdown_contract(self):
+        self.w3.eth.wait_for_transaction_receipt(
+            self.contract.functions.shutdown_contract().transact()
+        )
+
+
 
     
 
