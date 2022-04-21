@@ -1,9 +1,7 @@
-import sys, json
+import sys, json, time
+from utils import catch_event
 from web3 import Web3, HTTPProvider
 
-"""
-
-"""
 class Node:
 
     def __init__(self, w3, contract_addr):
@@ -28,6 +26,10 @@ class Node:
         )
 
         self.sessions = {}
+
+        # Contract events.
+        self._session_updated()  # TODO estos métodos deben recorrer los eventos cada bloque, y ejecutar todas las ordenes concurrentemente.
+        self._refund_gas_petition()
 
     def _session_updated(self):
         event = self.contract.events.RefundGasPetition()
