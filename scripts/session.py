@@ -1,5 +1,4 @@
-import sys, json, time
-from utils import catch_event
+import sys, json
 from web3 import Web3, HTTPProvider
 
 class Session:
