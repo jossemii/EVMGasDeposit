@@ -28,24 +28,29 @@ class Node:
         self.sessions = {}
 
         # Contract events.
-        self._session_updated()  # TODO estos métodos deben recorrer los eventos cada bloque, y ejecutar todas las ordenes concurrentemente.
-        self._refund_gas_petition()
 
-    def _session_updated(self):
-        event = self.contract.events.SessionUpdated()
-        self.sessions.update({
-            event.session_id: event.gas_amount
-        })
-
-    def _refund_gas_petition(self):
-        event = self.contract.events.RefundGasPetition()
-        self.w3.eth.wait_for_transaction_receipt(
-            self.contract.functions.set_balance_refundable(
-                session_id = event.session_id,
-                balance_refundable = self.sessions[event.session_id] - gas_amount_consumed(event.session_id)
-            ).transact()
+        # Update Session Event.
+        catch_event(
+            contractAddress = tx_receipt.contractAddress,
+            w3 = w3,
+            contract = self.contract,
+            event_name = 'SessionUpdated',
+            opt = lambda args: self.sessions.update({ args['session_id']: args['gas_amount'] })
         )
 
+        # Refund Gas Event.
+        catch_event(
+            contractAddress = tx_receipt.contractAddress,
+            w3 = w3,
+            contract = self.contract,
+            event_name = 'RefundGas',
+            opt = lambda args: self.w3.eth.wait_for_transaction_receipt(
+                                    self.contract.functions.set_balance_refundable(
+                                        session_id = args['session_id'],
+                                        balance_refundable = self.sessions[args['session_id']] - gas_amount_consumed(args['session_id'])
+                                    ).transact()
+                                )
+        )
 
     def transfer_property(self, new_owner):
         self.w3.eth.wait_for_transaction_receipt(
