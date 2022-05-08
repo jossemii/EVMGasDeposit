@@ -32,17 +32,17 @@ class Node:
         self._refund_gas_petition()
 
     def _session_updated(self):
-        event = self.contract.events.RefundGasPetition()
+        event = self.contract.events.SessionUpdated()
         self.sessions.update({
             event.session_id: event.gas_amount
         })
 
     def _refund_gas_petition(self):
-        session_id = self.contract.events.RefundGasPetition().session_id
+        event = self.contract.events.RefundGasPetition()
         self.w3.eth.wait_for_transaction_receipt(
             self.contract.functions.set_balance_refundable(
-                session_id = self.contract.events.RefundGasPetition().session_id,
-                balance_refundable = self.sessions[session_id] - gas_amount_consumed(session_id)
+                session_id = event.session_id,
+                balance_refundable = self.sessions[event.session_id] - gas_amount_consumed(event.session_id)
             ).transact()
         )
 
