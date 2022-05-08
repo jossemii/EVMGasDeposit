@@ -4,7 +4,7 @@ from web3 import Web3, HTTPProvider
 
 class Node:
 
-    def __init__(self, w3, contract_addr):
+    def __init__(self, w3):
         self.w3 = w3
         # set pre-funded account as sender
         w3.eth.default_account = w3.eth.accounts[0]
