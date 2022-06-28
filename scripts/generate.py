@@ -1,4 +1,4 @@
-import web3, sys
+import web3, sys, os
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
@@ -52,4 +52,9 @@ def generate(DIR):
     print(contract)
 
 
-generate(DIR = sys.argv[1])
+if __name__ == '__main__':
+    os.system('mkdir dist')
+    os.system('vyper contracts/'+sys.argv[1]+'.vy >> dist/bytecode')
+    os.system('vyper -f abi contracts/'+sys.argv[1]+'.vy >> dist/abi.json')
+    generate(DIR='dist')
+    os.system('rm -rf dist')

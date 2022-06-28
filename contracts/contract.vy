@@ -1,4 +1,4 @@
-# @version 0.3.1
+# @version >=0.3.1
 
 SESSION_ID_DIGITS: constant(uint256) = 16
 SESSION_ID_MODULUS: constant(uint256) = 10 ** SESSION_ID_DIGITS
