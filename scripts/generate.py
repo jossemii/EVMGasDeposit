@@ -13,7 +13,7 @@ def deploy_contract(w3, contract_interface):
     tx_hash = deploy_contract.constructor().transact()
 
     # Obtenga el recibo tx para obtener la dirección del contrato
-    tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
+    tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
 
     return tx_receipt.contractAddress
 
@@ -22,13 +22,14 @@ def generate():
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     print('Is connected to the network: ', w3.isConnected())
 
-
+    
+    key = '1b1810de121878360861aa25096eae02e259af680bc48305acf56456e2cff24c'
     w3.eth.defaultAccount = '0xeA9942Da750Bb2Dc7DE63B8Fa4C73b31Cb92FE7e'
     contract_address = deploy_contract(
         w3 = w3,
         contract_interface={
-            'abi': open('dist/abi.json', 'r').read(),
-            'bin': open('dist/bytecode', 'rb').read()
+            'abi': open('simple_dist/abi.json', 'r').read(),
+            'bin': bytes(open('simple_dist/bytecode', 'r').read(), 'utf-8')
         }
     )
 
