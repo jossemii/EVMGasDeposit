@@ -18,6 +18,9 @@ event SessionUpdated:
 event RefundGasPetition:
     session_id: uint256
 
+@internal
+def _to_uint256(x: uint256) -> uint256:
+    return x
 
 @internal
 def _generate_session_id(_client: address) -> uint256:
@@ -30,6 +33,11 @@ def _generate_session_id(_client: address) -> uint256:
 @external
 def __init__():
     self.owner = msg.sender
+    self.session_list[0] = Session({
+        client: msg.sender,
+        gas_amount: self._to_uint256(0),
+        balance_refundable: self._to_uint256(0)
+    })
 
 
 @external
@@ -38,13 +46,13 @@ def init_session() -> uint256:
     session_id: uint256 = self._generate_session_id(msg.sender)
     self.session_list[session_id] = Session({
         client: msg.sender,
-        gas_amount: msg.value,
-        balance_refundable: 0
+        gas_amount: self._to_uint256(msg.value),
+        balance_refundable: self._to_uint256(0)
     })
 
     log SessionUpdated(
             session_id,
-            self.session_list[session_id].gas_amount
+            self._to_uint256(msg.value)
         )
     return session_id
 
