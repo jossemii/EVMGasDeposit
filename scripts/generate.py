@@ -2,7 +2,7 @@ import web3
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
-def deploy_contract(w3, contract_interface):
+def deploy_contract(w3, contract_interface, private_key):
     # Contratos de iniciación e implementación
     deploy_contract = w3.eth.contract(
         abi=contract_interface['abi'],
@@ -23,14 +23,18 @@ def generate():
     print('Is connected to the network: ', w3.isConnected())
 
     
-    key = '1b1810de121878360861aa25096eae02e259af680bc48305acf56456e2cff24c'
-    w3.eth.defaultAccount = '0xeA9942Da750Bb2Dc7DE63B8Fa4C73b31Cb92FE7e'
+    private_key = '1b1810de121878360861aa25096eae02e259af680bc48305acf56456e2cff24c'
+    if (w3.eth.account.privateKeyToAccount(private_key).address == '0xeA9942Da750Bb2Dc7DE63B8Fa4C73b31Cb92FE7e'):
+        print('Private key is correct')
+
+    w3.eth.defaultAccount = w3.eth.account.privateKeyToAccount(private_key).address
     contract_address = deploy_contract(
         w3 = w3,
         contract_interface={
             'abi': open('simple_dist/abi.json', 'r').read(),
             'bin': bytes(open('simple_dist/bytecode', 'r').read(), 'utf-8')
-        }
+        },
+        private_key=private_key
     )
 
     print(contract_address)
