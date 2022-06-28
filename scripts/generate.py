@@ -63,7 +63,7 @@ if __name__ == '__main__':
     os.system('vyper -f abi contracts/'+sys.argv[1]+'.vy >> dist/abi.json')
 
     # Read keys.json
-    with open('keys.json', 'r') as f:
+    with open('scripts/keys.json', 'r') as f:
         keys = json.load(f)
     generate(
         private_key = keys['private_key'],
