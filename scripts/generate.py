@@ -2,20 +2,31 @@ import web3
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
-def deploy_contract(w3, contract_interface, private_key):
-    # Contratos de iniciación e implementación
-    deploy_contract = w3.eth.contract(
-        abi=contract_interface['abi'],
-        bytecode=contract_interface['bin']
-    )
-    
-    # Obtener hash de transacción del contrato implementado
-    tx_hash = deploy_contract.constructor().transact()
+class DeployContract:
+    def __init__(self, abi, bin, private_key, w3):
+        self.w3 = w3
+        self.abi = abi # Your contract ABI code
+        self.bin = bin # Your contract ByteCode 
+        self.priv = private_key
+        self.pub = w3.eth.account.privateKeyToAccount(private_key).address
 
-    # Obtenga el recibo tx para obtener la dirección del contrato
-    tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
-
-    return tx_receipt.contractAddress
+    def deploy(self):
+        instance = self.w3.eth.contract(abi=self.abi, bytecode=self.bin)
+        # hacky .. but it works :D
+        tx_data = instance.constructor().__dict__.get('data_in_transaction')
+        transaction = {
+            'from': self.pub, # Only 'from' address, don't insert 'to' address
+            'value': 0, # Add how many ethers you'll transfer during the deploy
+            'gas': 2000000, # Trying to make it dynamic ..
+            'gasPrice': self.w3.eth.gasPrice, # Get Gas Price
+            'nonce': self.w3.eth.getTransactionCount(self.pub), # Get Nonce
+            'data': tx_data # Here is the data sent through the network
+        }
+        # Sign the transaction using your private key
+        signed = self.w3.eth.account.signTransaction(transaction, self.priv)
+        #print(signed.rawTransaction)
+        tx_hash = self.w3.eth.sendRawTransaction(signed.rawTransaction)
+        return tx_hash.hex()
 
 def generate():
     w3 = Web3(Web3.HTTPProvider('https://api.avax-test.network/ext/bc/C/rpc'))
@@ -28,16 +39,16 @@ def generate():
         print('Private key is correct')
 
     w3.eth.defaultAccount = w3.eth.account.privateKeyToAccount(private_key).address
-    contract_address = deploy_contract(
-        w3 = w3,
-        contract_interface={
-            'abi': open('simple_dist/abi.json', 'r').read(),
-            'bin': bytes(open('simple_dist/bytecode', 'r').read(), 'utf-8')
-        },
-        private_key=private_key
-    )
 
-    print(contract_address)
+    deployment = DeployContract(
+        abi = open('simple_dist/abi.json', 'r').read(),
+        bin = bytes(open('simple_dist/bytecode', 'r').read(), 'utf-8'),
+        private_key = private_key,
+        w3 = w3
+    )
+    contract = deployment.deploy()
+
+    print(contract)
 
 
 generate()
