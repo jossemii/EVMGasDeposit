@@ -33,23 +33,6 @@ def __init__():
 
 
 @external
-def transfer_property(new_owner: address):
-    assert self.owner == msg.sender, "invalid owner address."
-    self.owner = new_owner
-
-
-@internal
-def _refund_balance():
-    send(self.owner, self.balance - 0)  # TODO debe de asegurarse de tener la liquidez suficiente por si los clientes quieren retirar gas. Podría haber una opcion en la sesion, que seleccione el cliente, en la que escoja si quiere tener una cobertura para retirar liquidez o no.
-
-
-@external
-def refund_balance():
-    assert self.owner == msg.sender, "invalid owner address."
-    self._refund_balance()
-
-
-@external
 @payable
 def init_session() -> uint256:
     session_id: uint256 = self._generate_session_id(msg.sender)
@@ -66,25 +49,31 @@ def init_session() -> uint256:
     return session_id
 
 
-@external
-@payable
-def increase_gas(session_id: uint256):
-    assert self.session_list[session_id].client == msg.sender, "invalid client."
-    self.session_list[session_id].gas_amount += msg.value
-    
-    log SessionUpdated(
-            session_id,
-            self.session_list[session_id].gas_amount
-        )
 
+# TRANSFER PROPERTY OF THE CONTRACT.
 
 @external
-def transfer_gas(from_session_id: uint256, to_session_id: uint256, gas_amount: uint256):
-    assert self.session_list[from_session_id].client == msg.sender, "invalid client."
-    assert self.session_list[from_session_id].gas_amount >= gas_amount, "insuficient gas on session."
-    self.session_list[from_session_id].gas_amount -= gas_amount
-    self.session_list[to_session_id].gas_amount += gas_amount
+def transfer_property(new_owner: address):
+    assert self.owner == msg.sender, "invalid owner address."
+    self.owner = new_owner
 
+
+
+# REFUND BALANCE TO THE OWNER.
+
+@internal
+def _refund_balance():
+    send(self.owner, self.balance - 0)  # TODO debe de asegurarse de tener la liquidez suficiente por si los clientes quieren retirar gas. Podría haber una opcion en la sesion, que seleccione el cliente, en la que escoja si quiere tener una cobertura para retirar liquidez o no.
+
+
+@external
+def refund_balance():
+    assert self.owner == msg.sender, "invalid owner address."
+    self._refund_balance()
+
+
+
+# REFUND GAS PETITION.
 
 # TODO, estos dos métodos se deben de estudiar mejor.
 @external
