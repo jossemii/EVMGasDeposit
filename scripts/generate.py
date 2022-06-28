@@ -1,3 +1,4 @@
+import json
 import web3, sys, os
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -29,14 +30,13 @@ class DeployContract:
         tx_hash = self.w3.eth.sendRawTransaction(signed.rawTransaction)
         return tx_hash.hex()
 
-def generate(DIR):
+def generate(private_key, public_key=None):
+    DIR = 'dist'
     w3 = Web3(Web3.HTTPProvider('https://api.avax-test.network/ext/bc/C/rpc'))
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     print('Is connected to the network: ', w3.isConnected())
 
-    
-    private_key = '1b1810de121878360861aa25096eae02e259af680bc48305acf56456e2cff24c'
-    if (w3.eth.account.privateKeyToAccount(private_key).address == '0xeA9942Da750Bb2Dc7DE63B8Fa4C73b31Cb92FE7e'):
+    if public_key and (w3.eth.account.privateKeyToAccount(private_key).address == public_key):
         print('Private key is correct')
 
     w3.eth.defaultAccount = w3.eth.account.privateKeyToAccount(private_key).address
@@ -61,5 +61,12 @@ if __name__ == '__main__':
     except: pass
     os.system('vyper contracts/'+sys.argv[1]+'.vy >> dist/bytecode')
     os.system('vyper -f abi contracts/'+sys.argv[1]+'.vy >> dist/abi.json')
-    generate(DIR='dist')
+
+    # Read keys.json
+    with open('keys.json', 'r') as f:
+        keys = json.load(f)
+    generate(
+        private_key = keys['private_key'],
+        public_key = keys['public_key']
+    )
     os.system('rm -rf dist')
