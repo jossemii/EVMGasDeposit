@@ -53,7 +53,12 @@ def generate(DIR):
 
 
 if __name__ == '__main__':
-    os.system('mkdir dist')
+    try:
+        os.system('rm -rf dist')
+    except: pass
+    try:
+        os.system('mkdir dist')
+    except: pass
     os.system('vyper contracts/'+sys.argv[1]+'.vy >> dist/bytecode')
     os.system('vyper -f abi contracts/'+sys.argv[1]+'.vy >> dist/abi.json')
     generate(DIR='dist')

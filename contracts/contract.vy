@@ -56,7 +56,7 @@ def init_session() -> uint256:
     self.session_list[session_id] = Session({
         client: msg.sender,
         gas_amount: msg.value,
-         balance_refundable: 0
+        balance_refundable: 0
     })
 
     log SessionUpdated(
