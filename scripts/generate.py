@@ -1,4 +1,4 @@
-import web3
+import web3, sys
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
@@ -29,7 +29,7 @@ class DeployContract:
         tx_hash = self.w3.eth.sendRawTransaction(signed.rawTransaction)
         return tx_hash.hex()
 
-def generate():
+def generate(DIR):
     w3 = Web3(Web3.HTTPProvider('https://api.avax-test.network/ext/bc/C/rpc'))
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     print('Is connected to the network: ', w3.isConnected())
@@ -42,8 +42,8 @@ def generate():
     w3.eth.defaultAccount = w3.eth.account.privateKeyToAccount(private_key).address
 
     deployment = DeployContract(
-        abi = open('simple_dist/abi.json', 'r').read(),
-        bin = bytes(open('simple_dist/bytecode', 'r').read(), 'utf-8'),
+        abi = open(DIR+'/abi.json', 'r').read(),
+        bin = bytes(open(DIR+'/bytecode', 'r').read(), 'utf-8'),
         private_key = private_key,
         w3 = w3
     )
@@ -52,4 +52,4 @@ def generate():
     print(contract)
 
 
-generate()
+generate(DIR = sys.argv[1])
