@@ -44,7 +44,7 @@ def generate(private_key, public_key=None):
 
     deployment = DeployContract(
         abi = open(DIR+'/abi.json', 'r').read(),
-        bin = bytes(open(DIR+'/bytecode', 'r').read(), 'utf-8'),
+        bin = open(DIR+'/bytecode', 'rb').read(),
         private_key = private_key,
         w3 = w3
     )
@@ -66,8 +66,9 @@ if __name__ == '__main__':
     try:
         os.system('mkdir dist')
     except: pass
-    os.system('vyper contracts/'+sys.argv[1]+'.vy >> dist/bytecode')
-    os.system('vyper -f abi contracts/'+sys.argv[1]+'.vy >> dist/abi.json')
+    contract = sys.argv[1] if len(sys.argv) > 1 else 'contract'
+    os.system('vyper contracts/'+contract+'.vy >> dist/bytecode')
+    os.system('vyper -f abi contracts/'+contract+'.vy >> dist/abi.json')
 
     # Read keys.json
     with open('scripts/keys.json', 'r') as f:
