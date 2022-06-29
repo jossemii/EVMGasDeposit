@@ -1,4 +1,5 @@
 import sys, json
+from scripts.utils import transact
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 
@@ -15,22 +16,14 @@ class Session:
             bytecode = open('dist/bytecode', 'rb').read()
         )
 
-
-        tx_data = self.contract.functions.init_session().__dict__.get('data_in_transaction')
-        transaction = {
-            'from': self.pub, # Only 'from' address, don't insert 'to' address
-            'value': 0, # Add how many ethers you'll transfer during the deploy
-            'gas': 2000000, # Trying to make it dynamic ..
-            'gasPrice': self.w3.eth.gasPrice, # Get Gas Price
-            'nonce': self.w3.eth.getTransactionCount(self.pub), # Get Nonce
-            'data': tx_data, # Here is the data sent through the network,
-            'chainId': json.load(open('scripts/provider.json'))['chain_id'],
-        }
-        # Sign the transaction using your private key
-        signed = self.w3.eth.account.signTransaction(transaction, self.priv)
-        tx_hash = self.w3.eth.sendRawTransaction(signed.rawTransaction)
-
+        tx_hash = transact(
+            w3 = w3,
+            method = self.contract.functions.init_session,
+            priv = self.priv,
+            value = 20
+        )
         print('Initi session tx_hash: ', tx_hash.hex())
+
         self.session_id = self.contract.events.session_initiated().processReceipt(self.w3.eth.waitForTransactionReceipt(tx_hash))['args']['session_id']
         print('session_id -> ', self.session_id)
 

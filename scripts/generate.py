@@ -1,4 +1,5 @@
 import json
+from scripts.utils import transact
 import web3, sys, os
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -12,23 +13,15 @@ class DeployContract:
         self.pub = w3.eth.account.privateKeyToAccount(private_key).address
 
     def deploy(self):
-        instance = self.w3.eth.contract(abi=self.abi, bytecode=self.bin)
-        # hacky .. but it works :D
-        tx_data = instance.constructor().__dict__.get('data_in_transaction')
-        transaction = {
-            'from': self.pub, # Only 'from' address, don't insert 'to' address
-            'value': 0, # Add how many ethers you'll transfer during the deploy
-            'gas': 2000000, # Trying to make it dynamic ..
-            'gasPrice': self.w3.eth.gasPrice, # Get Gas Price
-            'nonce': self.w3.eth.getTransactionCount(self.pub), # Get Nonce
-            'data': tx_data, # Here is the data sent through the network,
-            'chainId': json.load(open('scripts/provider.json'))['chain_id'],
-        }
-        # Sign the transaction using your private key
-        signed = self.w3.eth.account.signTransaction(transaction, self.priv)
-        #print(signed.rawTransaction)
-        tx_hash = self.w3.eth.sendRawTransaction(signed.rawTransaction)
-        return tx_hash.hex()
+        return transact(
+            w3 = self.w3,
+            method = self.w3.eth.contract(
+                        abi=self.abi, 
+                        bytecode=self.bin
+                    ).constructor,
+            priv = self.priv,
+            pub = self.pub
+        ).hex()
 
 def generate(private_key, public_key=None):
     DIR = 'dist'
