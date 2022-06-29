@@ -10,13 +10,13 @@ class Session:
         self.pub = w3.eth.account.privateKeyToAccount(private_key).address
 
         self.contract = w3.eth.contract(
-            address = contract_addr,
+            address = Web3.toChecksumAddress(contract_addr),
             abi = json.load(open('dist/abi.json')), 
             bytecode = open('dist/bytecode', 'rb').read()
         )
 
 
-        tx_data = self.contract.functions.initi_session().__dict__.get('data_in_transaction')
+        tx_data = self.contract.functions.init_session().__dict__.get('data_in_transaction')
         transaction = {
             'from': self.pub, # Only 'from' address, don't insert 'to' address
             'value': 0, # Add how many ethers you'll transfer during the deploy
