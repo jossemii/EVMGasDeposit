@@ -43,10 +43,11 @@ class Session:
         )
 
 
-w3 = Web3(HTTPProvider(json.load(open('scripts/provider.json'))['node_provider_uri']))
-w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-Session(
-    w3 = w3,
-    contract_addr = json.load(open('scripts/provider.json'))['contract_addr'],
-    private_key = json.load(open('scripts/keys.json'))['private_key']
-)
+if __name__ == '__main__':
+    w3 = Web3(HTTPProvider(json.load(open('scripts/provider.json'))['node_provider_uri']))
+    w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+    Session(
+        w3 = w3,
+        contract_addr = json.load(open('scripts/provider.json'))['contract_addr'],
+        private_key = json.load(open('scripts/keys.json'))['private_key']
+    )
