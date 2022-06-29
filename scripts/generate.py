@@ -22,7 +22,7 @@ class DeployContract:
             'gasPrice': self.w3.eth.gasPrice, # Get Gas Price
             'nonce': self.w3.eth.getTransactionCount(self.pub), # Get Nonce
             'data': tx_data, # Here is the data sent through the network,
-            'chainId': 43113,
+            'chainId': json.load(open('scripts/provider.json'))['chain_id'],
         }
         # Sign the transaction using your private key
         signed = self.w3.eth.account.signTransaction(transaction, self.priv)

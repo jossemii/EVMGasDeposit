@@ -1,1 +1,1 @@
-{"node_provider_uri": "https://api.avax-test.network/ext/bc/C/rpc", "contract_addr": "0x0939c0be4593852e2087ff4af31316b818664d85e787edf836d4efa238382ad1"}
+{"node_provider_uri": "https://api.avax-test.network/ext/bc/C/rpc", "contract_addr": "0x0939c0be4593852e2087ff4af31316b818664d85e787edf836d4efa238382ad1", "chain_id": 43113}
