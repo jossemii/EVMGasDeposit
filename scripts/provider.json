@@ -1,0 +1,4 @@
+{
+    "node_provider_uri": "https://api.avax-test.network/ext/bc/C/rpc",
+    "contract_addr": "0xDC867c3a8dC3E65Bc6Ea82E8994b75edFDeE4c36"
+}

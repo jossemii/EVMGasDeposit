@@ -1,5 +1,5 @@
 import sys, json
-from web3 import Web3, HTTPProvider
+from web3 import Web3, HTTPProvider, geth_poa_middleware
 
 class Session:
 
@@ -23,22 +23,6 @@ class Session:
             self.contract.functions.init_session().transact()
         )
 
-    def increase_gas(self, amount):
-        self.w3.eth.wait_for_transaction_receipt(
-            self.contract.functions.increase_gas(
-                session_id = self.session_id
-            ).transact({"from": self.wallet, "value": amount})
-        )
-
-    def transfer_gas(self, amount, to):
-        self.w3.eth.wait_for_transaction_receipt(
-            self.contract.functions.transfer_gas(
-                from_session_id = self.session_id,
-                to_session_id = to,
-                gas_amount = amount
-            ).transact()
-        )
-
     def refund_gas(self):
         self.w3.eth.wait_for_transaction_receipt(
             self.contract.functions.refund_gas(
@@ -47,8 +31,9 @@ class Session:
         )
 
 
-
+w3 = Web3(HTTPProvider(json.load(open('provider.json'))['node_provider_uri']))
+w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 Session(
-    w3 = Web3(HTTPProvider('localhost:7545')) if len(sys.argv) == 1 \
-        else Web3(Web3.EthereumTesterProvider())
+    w3 = w3,
+    contract_addr = json.load(open('provider.json').read())['contract_addr']
 )
