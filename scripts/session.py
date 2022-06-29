@@ -16,7 +16,7 @@ class Session:
 
         self.contract = w3.eth.contract(
             address = contract_addr,
-            abi = abi, bytecode = bytecode, bytecode_runtime = bytecode_runtime
+            abi = abi, bytecode = bytecode
         )
 
         self.session_id = self.w3.eth.wait_for_transaction_receipt(
