@@ -51,6 +51,12 @@ def generate(private_key, public_key=None):
     contract = deployment.deploy()
 
     print(contract)
+    
+    # write contract on provider.json contract_addr
+    provider = json.load(open('scripts/provider.json'))
+    provider['contract_addr'] = contract
+    with open('scripts/provider.json', 'w') as f:
+        json.dump(provider, f)
 
 
 if __name__ == '__main__':
