@@ -24,15 +24,13 @@ class Session:
             method = self.contract.functions.add_gas,
             priv = self.priv,
             value = 20,
-            input = sha256("192.168.1.16".encode('utf-8'))
+            input = sha256("192.168.1.16".encode('utf-8')).digest()
         )
         print('Session tx_hash: ', tx_hash)
 
         response = self.w3.eth.wait_for_transaction_receipt(tx_hash)
         if response['status'] == 0:
             raise Exception('Session init failed ' + str(response))
-        self.session_id = response['contractAddress']
-        print('session_id -> ', self.session_id)
 
 
     def refund_gas(self):
