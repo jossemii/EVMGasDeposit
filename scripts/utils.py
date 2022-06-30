@@ -28,16 +28,14 @@ def transact(
         pub = w3.eth.account.privateKeyToAccount(priv).address if not pub else pub  # Not verify the correctness, 
                                                                                     #     pub param is only for skip that step.
         
-        tx_data = method().__dict__.get('data_in_transaction')
-        transaction = {
+        transaction = method().buildTransaction({'gasPrice': w3.eth.gasPrice})
+        transaction.update({
             'from': pub, # Only 'from' address, don't insert 'to' address
             'value': value, # Add how many ethers you'll transfer during the deploy
             'gas': gas, # Trying to make it dynamic ..
-            'gasPrice': w3.eth.gasPrice, # Get Gas Price
             'nonce': w3.eth.getTransactionCount(pub), # Get Nonce
-            'data': tx_data, # Here is the data sent through the network,
             'chainId': json.load(open('scripts/provider.json'))['chain_id'],
-        }
+        })
         # Sign the transaction using your private key
         signed = w3.eth.account.signTransaction(transaction, priv)
         tx_hash = w3.eth.sendRawTransaction(signed.rawTransaction)

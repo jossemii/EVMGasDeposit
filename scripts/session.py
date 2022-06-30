@@ -16,15 +16,17 @@ class Session:
             bytecode = open('dist/bytecode', 'rb').read()
         )
 
+        print('Init session on contract:', contract_addr)
+
         tx_hash = transact(
             w3 = w3,
             method = self.contract.functions.init_session,
             priv = self.priv,
             value = 20
         )
-        print('Initi session tx_hash: ', tx_hash.hex())
+        print('Session tx_hash: ', tx_hash)
 
-        self.session_id = self.contract.events.session_initiated().processReceipt(self.w3.eth.waitForTransactionReceipt(tx_hash))['args']['session_id']
+        self.session_id = self.w3.eth.waitForTransactionReceipt(tx_hash)
         print('session_id -> ', self.session_id)
 
 
