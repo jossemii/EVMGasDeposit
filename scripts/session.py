@@ -1,5 +1,5 @@
 import sys, json
-from scripts.utils import transact
+from utils import transact
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 

@@ -1,5 +1,5 @@
 import json
-from scripts.utils import transact
+from utils import transact
 import web3, sys, os
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -21,7 +21,7 @@ class DeployContract:
                     ).constructor,
             priv = self.priv,
             pub = self.pub
-        ).hex()
+        )
 
 def generate(private_key, public_key=None):
     DIR = 'dist'
