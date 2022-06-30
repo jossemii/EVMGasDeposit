@@ -26,7 +26,10 @@ class Session:
         )
         print('Session tx_hash: ', tx_hash)
 
-        self.session_id = self.w3.eth.waitForTransactionReceipt(tx_hash)
+        response = self.w3.eth.wait_for_transaction_receipt(tx_hash)
+        if response['status'] == 0:
+            raise Exception('Session init failed ' + str(response))
+        self.session_id = response['contractAddress']
         print('session_id -> ', self.session_id)
 
 
