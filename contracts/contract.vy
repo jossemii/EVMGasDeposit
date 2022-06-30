@@ -22,6 +22,7 @@ event RefundGasPetition:
 def _to_uint256(x: uint256) -> uint256:
     return x
 
+@internal
 def _to_bytes32(x: bytes32) -> bytes32:
     return x
 
@@ -29,7 +30,7 @@ def _to_bytes32(x: bytes32) -> bytes32:
 @external
 def __init__():
     self.owner = msg.sender
-    self.token_list[self._to_bytes32(0)] = Token({
+    self.token_list[EMPTY_BYTES32] = Token({
         client: msg.sender,
         gas_amount: self._to_uint256(0),
         balance_refundable: self._to_uint256(0)
@@ -116,6 +117,6 @@ def refund_gas(token: bytes32):
 @external
 def shutdown_contract():
     assert self.owner == msg.sender, "invalid owner address."
-    for i in range(0, 1): # self.token_list: TODO
-        self._refund_gas(i)  # TODO tardará 2*numero_sesiones, ya que el método espera.
-    self._refund_balance()
+    #for i in range(0, 1): # self.token_list: TODO
+    #    self._refund_gas(i)  # TODO tardará 2*numero_sesiones, ya que el método espera.
+    #self._refund_balance()
