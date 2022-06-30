@@ -7,9 +7,6 @@ event NewSession:
     token: bytes32
     gas_amount: uint256
 
-event RefundGasPetition:
-    token: bytes32
-
 
 @internal
 def _to_uint256(x: uint256) -> uint256:
