@@ -1,3 +1,4 @@
+from hashlib import sha256
 import sys, json
 from utils import transact
 from web3 import Web3, HTTPProvider
@@ -20,9 +21,10 @@ class Session:
 
         tx_hash = transact(
             w3 = w3,
-            method = self.contract.functions.init_session,
+            method = self.contract.functions.add_gas,
             priv = self.priv,
-            value = 20
+            value = 20,
+            input = sha256("192.168.1.16".encode('utf-8'))
         )
         print('Session tx_hash: ', tx_hash)
 

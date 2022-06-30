@@ -23,12 +23,13 @@ def catch_event(contractAddress, w3, contract, event_name, opt):
 
 
 def transact(
-    w3, method, priv, value = 0, gas = 2000000, pub = None, params = None
+    w3, method, priv, value = 0, gas = 2000000, pub = None, input = None
 ) -> str:
         pub = w3.eth.account.privateKeyToAccount(priv).address if not pub else pub  # Not verify the correctness, 
                                                                                     #     pub param is only for skip that step.
         
-        transaction = method().buildTransaction({'gasPrice': w3.eth.gasPrice})
+        transaction = method(input).buildTransaction({'gasPrice': w3.eth.gasPrice}) if input \
+            else method().buildTransaction({'gasPrice': w3.eth.gasPrice})
         transaction.update({
             'from': pub, # Only 'from' address, don't insert 'to' address
             'value': value, # Add how many ethers you'll transfer during the deploy

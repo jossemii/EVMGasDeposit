@@ -29,7 +29,9 @@ def __init__():
 @external
 @payable
 def add_gas(token: bytes32):
-    self.token_list[token] += self._to_uint256(msg.value)
+    self.token_list[
+        self._to_bytes32(token)
+    ] += self._to_uint256(msg.value)
 
     log NewSession(
             token,
