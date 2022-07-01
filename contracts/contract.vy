@@ -11,6 +11,7 @@ event NewSession:
 @external
 def __init__():
     self.owner = msg.sender
+    # self.token_list[EMPTY_BYTES32] = empty(uint256) With uncommenting this line, the compiler raise vyper.exceptions.TypeCheckFailure: Hex node did not produce IR. vyper.ast.nodes.Hex.
 
 @external
 @payable
@@ -32,7 +33,6 @@ def get_gas(token: bytes32) -> uint256:
 def get_owner() -> address:
     return self.owner
 
-# TRANSFER PROPERTY OF THE CONTRACT.
 
 @external
 def transfer_property(new_owner: address):
@@ -41,12 +41,10 @@ def transfer_property(new_owner: address):
 
 
 
-# REFUND BALANCE TO THE OWNER.
 
 @internal
 def _refund_balance():
-    send(self.owner, self.balance - 0)  # TODO debe de asegurarse de tener la liquidez suficiente por si los clientes quieren retirar gas. Podría haber una opcion en la sesion, que seleccione el cliente, en la que escoja si quiere tener una cobertura para retirar liquidez o no.
-
+    send(self.owner, self.balance - 0)  
 
 @external
 def refund_balance():
