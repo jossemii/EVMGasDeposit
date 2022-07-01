@@ -1,1 +1,1 @@
-{"node_provider_uri": "https://api.avax-test.network/ext/bc/C/rpc", "contract_addr": "0x56c015bfa39a2a3601544aa44af11182c2798471", "chain_id": 43113}
+{"node_provider_uri": "https://ropsten.infura.io/v3/4dbf467a0c934c68aca07ea5955fb4b9", "contract_addr": "0xA63d522911508A18B9Db777130E5DF84F48816cD", "chain_id": 3}
