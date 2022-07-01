@@ -27,10 +27,9 @@ class Session:
 
         tx_hash = transact(
             w3 = w3,
-            method = self.contract.functions.add_gas,
+            method = self.contract.functions.add_gas(input_bytes),
             priv = self.priv,
-            value = 20,
-            input = input_bytes
+            value = 20
         )
         print('Session tx_hash: ', tx_hash)
 

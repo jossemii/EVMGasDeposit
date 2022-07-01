@@ -2,6 +2,7 @@ import json
 from utils import transact
 import web3, sys, os
 from web3 import Web3
+from hashlib import sha256
 from web3.middleware import geth_poa_middleware
 
 class DeployContract:
@@ -18,7 +19,7 @@ class DeployContract:
             method = self.w3.eth.contract(
                         abi=self.abi, 
                         bytecode=self.bin
-                    ).constructor,
+                    ).constructor(),
             priv = self.priv,
             pub = self.pub
         )

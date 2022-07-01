@@ -8,37 +8,27 @@ event NewSession:
     gas_amount: uint256
 
 
-@internal
-def _to_uint256(x: uint256) -> uint256:
-    return x
-
-@internal
-def _to_bytes32(x: bytes32) -> bytes32:
-    return x
 
 
 @external
 def __init__():
     self.owner = msg.sender
-    self.token_list[EMPTY_BYTES32] = self._to_uint256(0)
-
+    self.token_list[empty(bytes32)] = empty(uint256)
 
 @external
 @payable
 def add_gas(token: bytes32):
-    self.token_list[
-        self._to_bytes32(token)
-    ] += self._to_uint256(msg.value)
+    self.token_list[token] += msg.value
 
     log NewSession(
-            self._to_bytes32(token),
-            self._to_uint256(msg.value)
+            token,
+            msg.value
         )
 
 @external
 @view
 def get_gas(token: bytes32) -> uint256:
-    return self.token_list[self._to_bytes32(token)]
+    return self.token_list[token]
 
 @external
 @view
