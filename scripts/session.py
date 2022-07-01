@@ -1,5 +1,5 @@
 from hashlib import sha256
-import sys, json
+import json
 from utils import transact
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
@@ -19,12 +19,18 @@ class Session:
 
         print('Init session on contract:', contract_addr)
 
+        input_hash = sha256("192.168.1.16".encode('utf-8'))
+        print('Input hash:', input_hash.hexdigest())
+
+        input_bytes = sha256("192.168.1.16".encode('utf-8')).digest()
+        print('Input:', str(input))
+
         tx_hash = transact(
             w3 = w3,
             method = self.contract.functions.add_gas,
             priv = self.priv,
             value = 20,
-            input = sha256("192.168.1.16".encode('utf-8')).digest()
+            input = input_bytes
         )
         print('Session tx_hash: ', tx_hash)
 
@@ -32,6 +38,10 @@ class Session:
         if response['status'] == 0:
             raise Exception('Session init failed ' + str(response))
 
+        try:
+            response = self.contract.functions.get_gas(input_bytes).call({'from': self.pub})
+            print('Session gas: ', response)
+        except: print('Session gas not found')
 
     def refund_gas(self):
         self.w3.eth.wait_for_transaction_receipt(

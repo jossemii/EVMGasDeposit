@@ -4,7 +4,7 @@ owner: address
 token_list: HashMap[ bytes32, uint256]
 
 event NewSession:
-    token: bytes32
+    token: indexed(bytes32)
     gas_amount: uint256
 
 
@@ -31,11 +31,19 @@ def add_gas(token: bytes32):
     ] += self._to_uint256(msg.value)
 
     log NewSession(
-            token,
+            self._to_bytes32(token),
             self._to_uint256(msg.value)
         )
 
+@external
+@view
+def get_gas(token: bytes32) -> uint256:
+    return self.token_list[self._to_bytes32(token)]
 
+@external
+@view
+def get_owner() -> address:
+    return self.owner
 
 # TRANSFER PROPERTY OF THE CONTRACT.
 
