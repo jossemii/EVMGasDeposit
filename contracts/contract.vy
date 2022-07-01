@@ -8,12 +8,9 @@ event NewSession:
     gas_amount: uint256
 
 
-
-
 @external
 def __init__():
     self.owner = msg.sender
-    self.token_list[empty(bytes32)] = empty(uint256)
 
 @external
 @payable
