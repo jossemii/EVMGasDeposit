@@ -25,8 +25,7 @@ class DeployContract:
 
 def generate(private_key, public_key=None):
     DIR = 'dist'
-    #read provider.json and get the node_provider_uri
-    w3  =Web3(Web3.HTTPProvider(json.load(open('scripts/provider.json'))['node_provider_uri']))
+    w3 = Web3(Web3.HTTPProvider(json.load(open('scripts/provider.json'))['node_provider_uri']))
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)
     print('Is connected to the network: ', w3.isConnected())
 
