@@ -5,7 +5,7 @@ contract Deposit {
     mapping(bytes32 => uint256) public token_list;
 
     event NewSession(
-        bytes32 token, 
+        bytes32 indexed token, 
         uint256 amount
     );
 
