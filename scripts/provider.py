@@ -1,5 +1,7 @@
 import json
+from time import sleep
 from utils import catch_event
+from hashlib import sha256
 from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 
@@ -17,7 +19,6 @@ class Provider:
         )
 
         print('Init session on contract:', contract_addr)
-
 
         self.sessions = {}
 
