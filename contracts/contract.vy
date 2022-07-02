@@ -11,7 +11,6 @@ event NewSession:
 @external
 def __init__():
     self.owner = msg.sender
-    # self.token_list[EMPTY_BYTES32] = empty(uint256) With uncommenting this line, the compiler raise vyper.exceptions.TypeCheckFailure: Hex node did not produce IR. vyper.ast.nodes.Hex.
 
 @external
 @payable
