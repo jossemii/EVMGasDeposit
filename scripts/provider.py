@@ -37,7 +37,13 @@ class Provider:
 
     def __new_session(self, token, amount):
         print('New session:', token, amount)
-        self.sessions[token] += amount if token in self.sessions else amount
+        if token not in self.sessions:
+            self.sessions[token] = amount
+        else:
+            self.sessions[token] += amount
+            
+        print('\n')
+        print(self.sessions)
 
 
     def transfer_property(self, new_owner):
