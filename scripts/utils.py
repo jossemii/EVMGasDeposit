@@ -35,7 +35,7 @@ def transact(
             'value': value, # Add how many ethers you'll transfer during the deploy
             'gas': gas, # Trying to make it dynamic ..
             'nonce': w3.eth.getTransactionCount(pub), # Get Nonce
-            'chainId': json.load(open('scripts/provider.json'))['chain_id'],
+            'chainId': w3.eth.chainId # Get Chain ID,
         })
         # Sign the transaction using your private key
         signed = w3.eth.account.signTransaction(transaction, priv)
