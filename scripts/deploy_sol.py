@@ -1,4 +1,5 @@
 import json
+import shutil
 import web3, sys, os
 from web3 import Web3
 import sys
@@ -18,7 +19,7 @@ class DeployContract:
         method = self.w3.eth.contract(
                         abi=self.abi, 
                         bytecode=self.bin
-                    ).constructor()
+                    ).constructor(52)
 
         print("Building transaction...")
         try:
@@ -39,6 +40,11 @@ class DeployContract:
         print("Waiting for transaction to finish...")
         transaction_receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
         print(f"Done! Contract deployed to {transaction_receipt.contractAddress}")
+        print('Parity factor -> ',self.w3.eth.contract(
+            address = Web3.toChecksumAddress(transaction_receipt.contractAddress),
+            abi = self.abi, 
+            bytecode = self.bin          
+        ).functions.get_parity_factor().call())
 
 def compile_solidity_code() -> tuple:
     compiled_sol = compile_source(
@@ -69,9 +75,22 @@ def generate(private_key, public_key=None):
         private_key = private_key,
         w3 = w3
     )
-    contract = deployment.deploy()
+    deployment.deploy()
 
-    print(contract)
+    # Delete all content of dist folder
+    for file in os.listdir(DIR):
+        file_path = os.path.join(DIR, file)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+
+    print('Saving contract to file...')
+    with open(f'dist/abi.json', 'w') as f:
+        f.write(json.dumps(abi))
+    with open(f'dist/bytecode', 'w') as f:
+        f.write(bin)
+    print('Done!')
 
 
 if __name__ == '__main__':
